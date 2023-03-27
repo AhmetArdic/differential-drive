@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-   twist_to_motors - converts a twist message to motor commands.  Needed for navigation stack
+   cmd_vel_to_motors - converts a cmd_vel message to motor commands.  Needed for navigation stack
    
    
     Copyright (C) 2012 Jon Stephan. 
@@ -26,22 +26,22 @@ from geometry_msgs.msg import Twist
 
 #############################################################
 #############################################################
-class TwistToMotors():
+class CmdVelToMotors():
 #############################################################
 #############################################################
 
     #############################################################
     def __init__(self):
     #############################################################
-        rospy.init_node("twist_to_motors")
+        rospy.init_node("cmd_vel_to_motors")
         nodename = rospy.get_name()
         rospy.loginfo("%s started" % nodename)
     
-        self.w = rospy.get_param("~base_width", 0.2)
+        self.w = rospy.get_param("~base_width", 0.20)
     
         self.pub_lmotor = rospy.Publisher('lwheel_vtarget', Float32, queue_size=10)
         self.pub_rmotor = rospy.Publisher('rwheel_vtarget', Float32, queue_size=10)
-        rospy.Subscriber('twist', Twist, self.twistCallback)
+        rospy.Subscriber('cmd_vel', Twist, self.cmdvelCallback)
     
     
         self.rate = rospy.get_param("~rate", 50)
@@ -83,9 +83,9 @@ class TwistToMotors():
         self.ticks_since_target += 1
 
     #############################################################
-    def twistCallback(self,msg):
+    def cmdvelCallback(self,msg):
     #############################################################
-        # rospy.loginfo("-D- twistCallback: %s" % str(msg))
+        # rospy.loginfo("-D- cmdvelCallback: %s" % str(msg))
         self.ticks_since_target = 0
         self.dx = msg.linear.x
         self.dr = msg.angular.z
@@ -96,7 +96,7 @@ class TwistToMotors():
 if __name__ == '__main__':
     """ main """
     try:
-        twistToMotors = TwistToMotors()
-        twistToMotors.spin()
+        cmdvelToMotors = CmdVelToMotors()
+        cmdvelToMotors.spin()
     except rospy.ROSInterruptException:
         pass
